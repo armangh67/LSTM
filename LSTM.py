@@ -17,6 +17,9 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
 import datetime
 import tensorflow as tf
+np.random.seed(1234)
+tf.random.set_seed(1234)
+
 
 """ 
     Reading dataset from github repo
