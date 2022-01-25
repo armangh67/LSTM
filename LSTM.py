@@ -91,7 +91,7 @@ def Train_Test_Split(X,Y,ratio):
 ##################### function 4 : LSTM model ##############################
 def LSTM_model(n_lag, n_pred, unit, dropout, lr):
     model = Sequential()
-    model.add(LSTM(unit, activation = 'relu', input_shape = (lag , num_features) , return_sequences = True))
+    model.add(LSTM(unit, activation = 'relu', input_shape = (n_lag , num_features) , return_sequences = True))
     model.add(Dropout(dropout))
     model.add(LSTM(unit , activation = 'tanh',  return_sequences = True))
     model.add(Dropout(dropout))
