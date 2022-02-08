@@ -73,9 +73,9 @@ Defining functions: 1- Normalize function
                     4- LSTM Model
 """
 #################### function 1 : Normalizing data between 0 and 1 ############
-def normalize(data):   
+def normalize(data, feature_range):   
     #normalize the dataset for working with the lstm nn
-    scaler = MinMaxScaler()
+    scaler = MinMaxScaler(feature_range)
     data_normd = scaler.fit_transform(data)
     
     return data_normd,scaler
@@ -142,9 +142,9 @@ epochs = 20
 batch_size = 64
 num_features = dataset.shape[1]
 
+dataset ,scaler1 = normalize(dataset, feature_range= (0,50))
 
-
-df_normd , scaler = normalize(dataset)
+df_normd , scaler = normalize(dataset , feature_range=(0,1))
 # Creating the X and Y for training, the formula is set up to assume the target Y is the left most column = target_index=0
 X, Y = Time_Series(df_normd, lag = lag, n_ahead = n_future)
 
