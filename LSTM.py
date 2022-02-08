@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jan 18 11:59:18 2022
+Created on Tue Feb  8 13:17:17 2022
 
+@author: a454g185
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 18 11:59:18 2022
 @author: a454g185
 """
 
@@ -17,6 +23,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
 import datetime
 import tensorflow as tf
+from sklearn.impute import KNNImputer
 np.random.seed(1234)
 tf.random.set_seed(1234)
 
@@ -29,13 +36,29 @@ series = pd.read_csv(r'https://raw.githubusercontent.com/armangh67/LSTM/main/Tur
 """
     Pre-processing the dataset
 """
-# print(series.columns)
+
+############## KNN for null values ################
+def fill_null(data,n):
+    knn = KNNImputer(n_neighbors = n, add_indicator = True)
+    knn.fit(data)
+    df = pd.DataFrame(knn.transform(data))
+    a = list(data)
+    x = []
+    for i in range(data.shape[1]):
+        x.append(np.array(df.iloc[:,i]))
+    for i in range(data.shape[1]):
+        data[(a[i])] = x[i] 
+    return data
+
+
 df_selected = series[['Unnamed: 0','ActivePower','AmbientTemperatue','WindDirection','WindSpeed']]
 df = df_selected.rename(columns = {'Unnamed: 0':'Date'})     ####### rename the date column ######
-df = df.fillna(0)
 df['Date'] = pd.to_datetime(df['Date'])
 dataset = df.set_index('Date')
-dataset = dataset.loc['2020-01-01':]
+dataset = dataset.loc['2019-01-01':]
+dataset = fill_null(dataset, 50)     ####### Null value imputation ######
+
+
 
 ############ Select features for the modeling ############
 
@@ -110,7 +133,7 @@ def LSTM_model(n_lag, n_pred, unit, dropout, lr):
     Simulation Parameters
 """
 n_hour_pred = 24            #### how many hours we want to predict ahead #####
-n_hour_observation = 24     #### how many hours to observe #####   
+n_hour_observation = 12    #### how many hours to observe #####   
 lag = n_hour_observation*6
 n_future = n_hour_pred*6
 n_future = 1
@@ -185,17 +208,3 @@ plt.gcf().axes[0].yaxis.get_major_formatter().set_scientific(False)
 plt.legend()
 plt.savefig('forecast_example.png')
 plt.show
-
-
-
-
-
-
-
-
-
-
-
-
-
-
